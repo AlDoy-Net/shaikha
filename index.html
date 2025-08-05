@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shaikha Aldoy Presentations</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Home Page Styles */
+        .home-mode {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .home-mode.active {
+            display: flex;
+        }
+        
+        .container {
+            text-align: center;
+            background: white;
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .option {
+            padding: 20px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .option:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .option h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.3em;
+        }
+        
+        .option p {
+            margin: 0;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .stats {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* Slideshow Styles */
+        .slideshow-mode {
+            background: #000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .slideshow-mode.active {
+            display: flex;
+        }
+        
+        .slideshow-container {
+            position: relative;
+            max-width: 95vw;
+            max-height: 95vh;
+            margin: auto;
+        }
+        
+        .slide {
+            display: none;
+            width: 100%;
+            height: auto;
+            max-height: 95vh;
+            object-fit: contain;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            padding: 15px 25px;
+            border-radius: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .control-btn {
+            background: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .control-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-1px);
+        }
+        
+        .control-btn:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .slide-counter {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* Gallery Styles */
+        .gallery-mode {
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+            display: none;
+        }
+        
+        .gallery-mode.active {
+            display: block;
+        }
+        
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .slide-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .slide-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .slide-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .slide-info {
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .slide-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Modal for full-size view */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 95%;
+            max-height: 95%;
+        }
+        
+        .modal img {
+            width: 100%;
+            height: auto;
+            max-height: 95vh;
+            object-fit: contain;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
+        .close:hover {
+            color: #bbb;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px 20px;
+            border-radius: 25px;
+            z-index: 200;
+        }
+        
+        .nav-btn {
+            background: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-btn:hover {
+            background: #f0f0f0;
+        }
+        
+        .nav-btn:last-child {
+            margin-right: 0;
+        }
+
+        /* Fullscreen Button */
+        .fullscreen-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 200;
+            transition: all 0.2s ease;
+        }
+        
+        .fullscreen-btn:hover {
+            background: rgba(0,0,0,0.9);
+            transform: scale(1.05);
+        }
+
+        /* Keyboard hints */
+        .keyboard-hints {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 200;
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 40px 20px;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
+            }
+            
+            .controls {
+                padding: 10px 15px;
+                gap: 10px;
+            }
+            
+            .control-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- HOME PAGE -->
+    <div class="home-mode active" id="home-mode">
+        <div class="container">
+            <h1>📊 Presentation Slides</h1>
+            <div class="subtitle">Choose your viewing experience</div>
+            
+            <div class="options">
+                <div class="option" onclick="changeMode('slideshow')">
+                    <h3>🎯 Slideshow Mode</h3>
+                    <p>Navigate through slides sequentially with keyboard controls</p>
+                </div>
+                
+                <div class="option" onclick="changeMode('gallery')">
+                    <h3>🖼️ Gallery View</h3>
+                    <p>Browse all slides in a grid layout for quick overview</p>
+                </div>
+                
+                <div class="option" onclick="window.open('slides/', '_blank')">
+                    <h3>📁 File Browser</h3>
+                    <p>Direct access to individual slide files</p>
+                </div>
+            </div>
+            
+            <div class="stats">
+                📊 Total slides: 36 • Format: jpeg
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDESHOW MODE -->
+    <div class="slideshow-mode" id="slideshow-mode">
+        <div class="nav-bar">
+            <button class="nav-btn" onclick="changeMode('home')">🏠 Home</button>
+            <button class="nav-btn" onclick="changeMode('gallery')">🖼️ Gallery</button>
+        </div>
+        
+        <button class="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen (F)">⛶</button>
+        
+        <div class="keyboard-hints">
+            <div>← → Arrow keys: Navigate</div>
+            <div>F: Toggle fullscreen</div>
+            <div>ESC: Exit fullscreen</div>
+        </div>
+        
+        <div class="slideshow-container" id="slideshow-container">
+                            <img src="slides/1.jpeg" 
+                     class="slide active" 
+                     alt="Slide 1"
+                     loading="eager">
+                            <img src="slides/2.jpeg" 
+                     class="slide " 
+                     alt="Slide 2"
+                     loading="eager">
+                            <img src="slides/3.jpeg" 
+                     class="slide " 
+                     alt="Slide 3"
+                     loading="eager">
+                            <img src="slides/4.jpeg" 
+                     class="slide " 
+                     alt="Slide 4"
+                     loading="lazy">
+                            <img src="slides/5.jpeg" 
+                     class="slide " 
+                     alt="Slide 5"
+                     loading="lazy">
+                            <img src="slides/6.jpeg" 
+                     class="slide " 
+                     alt="Slide 6"
+                     loading="lazy">
+                            <img src="slides/7.jpeg" 
+                     class="slide " 
+                     alt="Slide 7"
+                     loading="lazy">
+                            <img src="slides/8.jpeg" 
+                     class="slide " 
+                     alt="Slide 8"
+                     loading="lazy">
+                            <img src="slides/9.jpeg" 
+                     class="slide " 
+                     alt="Slide 9"
+                     loading="lazy">
+                            <img src="slides/10.jpeg" 
+                     class="slide " 
+                     alt="Slide 10"
+                     loading="lazy">
+                            <img src="slides/11.jpeg" 
+                     class="slide " 
+                     alt="Slide 11"
+                     loading="lazy">
+                            <img src="slides/12.jpeg" 
+                     class="slide " 
+                     alt="Slide 12"
+                     loading="lazy">
+                            <img src="slides/13.jpeg" 
+                     class="slide " 
+                     alt="Slide 13"
+                     loading="lazy">
+                            <img src="slides/14.jpeg" 
+                     class="slide " 
+                     alt="Slide 14"
+                     loading="lazy">
+                            <img src="slides/15.jpeg" 
+                     class="slide " 
+                     alt="Slide 15"
+                     loading="lazy">
+                            <img src="slides/16.jpeg" 
+                     class="slide " 
+                     alt="Slide 16"
+                     loading="lazy">
+                            <img src="slides/17.jpeg" 
+                     class="slide " 
+                     alt="Slide 17"
+                     loading="lazy">
+                            <img src="slides/18.jpeg" 
+                     class="slide " 
+                     alt="Slide 18"
+                     loading="lazy">
+                            <img src="slides/19.jpeg" 
+                     class="slide " 
+                     alt="Slide 19"
+                     loading="lazy">
+                            <img src="slides/20.jpeg" 
+                     class="slide " 
+                     alt="Slide 20"
+                     loading="lazy">
+                            <img src="slides/21.jpeg" 
+                     class="slide " 
+                     alt="Slide 21"
+                     loading="lazy">
+                            <img src="slides/22.jpeg" 
+                     class="slide " 
+                     alt="Slide 22"
+                     loading="lazy">
+                            <img src="slides/23.jpeg" 
+                     class="slide " 
+                     alt="Slide 23"
+                     loading="lazy">
+                            <img src="slides/24.jpeg" 
+                     class="slide " 
+                     alt="Slide 24"
+                     loading="lazy">
+                            <img src="slides/25.jpeg" 
+                     class="slide " 
+                     alt="Slide 25"
+                     loading="lazy">
+                            <img src="slides/26.jpeg" 
+                     class="slide " 
+                     alt="Slide 26"
+                     loading="lazy">
+                            <img src="slides/27.jpeg" 
+                     class="slide " 
+                     alt="Slide 27"
+                     loading="lazy">
+                            <img src="slides/28.jpeg" 
+                     class="slide " 
+                     alt="Slide 28"
+                     loading="lazy">
+                            <img src="slides/29.jpeg" 
+                     class="slide " 
+                     alt="Slide 29"
+                     loading="lazy">
+                            <img src="slides/30.jpeg" 
+                     class="slide " 
+                     alt="Slide 30"
+                     loading="lazy">
+                            <img src="slides/31.jpeg" 
+                     class="slide " 
+                     alt="Slide 31"
+                     loading="lazy">
+                            <img src="slides/35.jpeg" 
+                     class="slide " 
+                     alt="Slide 35"
+                     loading="lazy">
+                            <img src="slides/38.jpeg" 
+                     class="slide " 
+                     alt="Slide 38"
+                     loading="lazy">
+                            <img src="slides/39.jpeg" 
+                     class="slide " 
+                     alt="Slide 39"
+                     loading="lazy">
+                            <img src="slides/40.jpeg" 
+                     class="slide " 
+                     alt="Slide 40"
+                     loading="lazy">
+                            <img src="slides/41.jpeg" 
+                     class="slide " 
+                     alt="Slide 41"
+                     loading="lazy">
+                    </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="prevBtn">← Previous</button>
+            <span class="slide-counter">
+                <span id="currentSlide">1</span> / <span id="totalSlides">36</span>
+            </span>
+            <button class="control-btn" id="nextBtn">Next →</button>
+        </div>
+    </div>
+
+    <!-- GALLERY MODE -->
+    <div class="gallery-mode" id="gallery-mode">
+        <div class="nav-bar">
+            <button class="nav-btn" onclick="changeMode('home')">🏠 Home</button>
+            <button class="nav-btn" onclick="changeMode('slideshow')">🎯 Slideshow</button>
+        </div>
+        
+        <button class="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen (F)">⛶</button>
+        
+        <div class="keyboard-hints">
+            <div>F: Toggle fullscreen</div>
+            <div>ESC: Exit fullscreen/Close modal</div>
+            <div>Click slide: View full size</div>
+        </div>
+        
+        <div class="gallery-header">
+            <h1>Shaikha Aldoy Presentation Slides</h1>
+            <p>Click on any slide to view full size • Total slides: 36</p>
+        </div>
+        
+        <div class="gallery" id="gallery">
+                            <div class="slide-card" onclick="openModal('slides/1.jpeg')">
+                    <img src="slides/1.jpeg" alt="Slide 1" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 1</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/2.jpeg')">
+                    <img src="slides/2.jpeg" alt="Slide 2" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 2</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/3.jpeg')">
+                    <img src="slides/3.jpeg" alt="Slide 3" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 3</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/4.jpeg')">
+                    <img src="slides/4.jpeg" alt="Slide 4" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 4</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/5.jpeg')">
+                    <img src="slides/5.jpeg" alt="Slide 5" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 5</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/6.jpeg')">
+                    <img src="slides/6.jpeg" alt="Slide 6" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 6</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/7.jpeg')">
+                    <img src="slides/7.jpeg" alt="Slide 7" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 7</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/8.jpeg')">
+                    <img src="slides/8.jpeg" alt="Slide 8" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 8</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/9.jpeg')">
+                    <img src="slides/9.jpeg" alt="Slide 9" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 9</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/10.jpeg')">
+                    <img src="slides/10.jpeg" alt="Slide 10" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 10</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/11.jpeg')">
+                    <img src="slides/11.jpeg" alt="Slide 11" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 11</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/12.jpeg')">
+                    <img src="slides/12.jpeg" alt="Slide 12" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 12</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/13.jpeg')">
+                    <img src="slides/13.jpeg" alt="Slide 13" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 13</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/14.jpeg')">
+                    <img src="slides/14.jpeg" alt="Slide 14" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 14</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/15.jpeg')">
+                    <img src="slides/15.jpeg" alt="Slide 15" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 15</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/16.jpeg')">
+                    <img src="slides/16.jpeg" alt="Slide 16" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 16</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/17.jpeg')">
+                    <img src="slides/17.jpeg" alt="Slide 17" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 17</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/18.jpeg')">
+                    <img src="slides/18.jpeg" alt="Slide 18" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 18</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/19.jpeg')">
+                    <img src="slides/19.jpeg" alt="Slide 19" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 19</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/20.jpeg')">
+                    <img src="slides/20.jpeg" alt="Slide 20" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 20</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/21.jpeg')">
+                    <img src="slides/21.jpeg" alt="Slide 21" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 21</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/22.jpeg')">
+                    <img src="slides/22.jpeg" alt="Slide 22" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 22</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/23.jpeg')">
+                    <img src="slides/23.jpeg" alt="Slide 23" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 23</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/24.jpeg')">
+                    <img src="slides/24.jpeg" alt="Slide 24" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 24</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/25.jpeg')">
+                    <img src="slides/25.jpeg" alt="Slide 25" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 25</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/26.jpeg')">
+                    <img src="slides/26.jpeg" alt="Slide 26" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 26</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/27.jpeg')">
+                    <img src="slides/27.jpeg" alt="Slide 27" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 27</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/28.jpeg')">
+                    <img src="slides/28.jpeg" alt="Slide 28" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 28</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/29.jpeg')">
+                    <img src="slides/29.jpeg" alt="Slide 29" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 29</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/30.jpeg')">
+                    <img src="slides/30.jpeg" alt="Slide 30" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 30</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/31.jpeg')">
+                    <img src="slides/31.jpeg" alt="Slide 31" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 31</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/35.jpeg')">
+                    <img src="slides/35.jpeg" alt="Slide 35" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 35</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/38.jpeg')">
+                    <img src="slides/38.jpeg" alt="Slide 38" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 38</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/39.jpeg')">
+                    <img src="slides/39.jpeg" alt="Slide 39" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 39</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/40.jpeg')">
+                    <img src="slides/40.jpeg" alt="Slide 40" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 40</div>
+                    </div>
+                </div>
+                            <div class="slide-card" onclick="openModal('slides/41.jpeg')">
+                    <img src="slides/41.jpeg" alt="Slide 41" loading="lazy">
+                    <div class="slide-info">
+                        <div class="slide-number">Slide 41</div>
+                    </div>
+                </div>
+                    </div>
+        
+        <!-- Modal -->
+        <div id="modal" class="modal">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="modal-content">
+                <img id="modal-img" src="" alt="">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentSlideIndex = 0;
+        const totalSlides = 36;
+        const slideNumbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,35,38,39,40,41];
+        
+        // Mode switching
+        function changeMode(mode) {
+            // Hide all modes
+            document.querySelectorAll('.home-mode, .slideshow-mode, .gallery-mode').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Show selected mode
+            const targetMode = document.getElementById(mode + '-mode');
+            if (targetMode) {
+                targetMode.classList.add('active');
+            }
+            
+            // Initialize mode-specific functionality
+            if (mode === 'slideshow') {
+                initializeSlideshow();
+            } else if (mode === 'gallery') {
+                initializeGallery();
+            }
+        }
+        
+        // Fullscreen functionality
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Error attempting to enable fullscreen:', err.message);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+        
+        // Global keyboard handlers
+        document.addEventListener('keydown', function(e) {
+            // F key for fullscreen
+            if (e.key === 'f' || e.key === 'F') {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+            
+            // ESC key
+            if (e.key === 'Escape') {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+                // Close modal if in gallery mode
+                const modal = document.getElementById('modal');
+                if (modal && modal.style.display === 'block') {
+                    closeModal();
+                }
+            }
+        });
+
+        // Slideshow functionality
+        function initializeSlideshow() {
+            const slides = document.querySelectorAll('.slide');
+            
+            window.showSlide = function(n) {
+                if (slides.length === 0) return;
+                
+                slides[currentSlideIndex].classList.remove('active');
+                currentSlideIndex = Math.max(0, Math.min(n, slides.length - 1));
+                slides[currentSlideIndex].classList.add('active');
+                document.getElementById('currentSlide').textContent = currentSlideIndex + 1;
+                
+                // Update button states
+                document.getElementById('prevBtn').disabled = currentSlideIndex === 0;
+                document.getElementById('nextBtn').disabled = currentSlideIndex === slides.length - 1;
+            };
+            
+            window.nextSlide = function() {
+                if (currentSlideIndex < slides.length - 1) {
+                    showSlide(currentSlideIndex + 1);
+                }
+            };
+            
+            window.prevSlide = function() {
+                if (currentSlideIndex > 0) {
+                    showSlide(currentSlideIndex - 1);
+                }
+            };
+            
+            // Event listeners
+            document.getElementById('nextBtn').onclick = nextSlide;
+            document.getElementById('prevBtn').onclick = prevSlide;
+            
+            // Keyboard navigation for slideshow
+            document.addEventListener('keydown', function(e) {
+                if (document.getElementById('slideshow-mode').classList.contains('active')) {
+                    if (e.key === 'ArrowRight' || e.key === ' ') {
+                        e.preventDefault();
+                        nextSlide();
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        prevSlide();
+                    }
+                }
+            });
+            
+            // Initialize
+            showSlide(0);
+        }
+        
+        // Gallery functionality
+        function initializeGallery() {
+            const modal = document.getElementById('modal');
+            const modalImg = document.getElementById('modal-img');
+            
+            window.openModal = function(imageSrc) {
+                modal.style.display = 'block';
+                modalImg.src = imageSrc;
+            };
+            
+            window.closeModal = function() {
+                modal.style.display = 'none';
+            };
+            
+            // Modal click outside to close
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            };
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Home mode is active by default
+            initializeSlideshow();
+            initializeGallery();
+        });
+    </script>
+</body>
+</html>
